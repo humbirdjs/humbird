@@ -30,6 +30,6 @@ Apply the route.
 
 See [router](/concepts/router)
 
-### app.start(el: Element)
+### app.start(el: Element | string)
 
 Mount the app.
