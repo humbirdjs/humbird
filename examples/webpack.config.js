@@ -9,7 +9,7 @@ module.exports = {
   devServer: {
     contentBase: __dirname
   },
-  // devtool: 'cheap-eval-source-map',
+  devtool: 'source-map',
   module: {
     rules: [
       {
