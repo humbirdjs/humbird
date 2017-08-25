@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "lib",
+    "target": "es5",
+    "reactNamespace": "react",
+    "sourceMap": false,
+    "declaration": true,
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules",
+    "example",
+    "lib",
+    "test"
+  ]
+}
