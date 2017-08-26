@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { render } from 'react-dom'
-import { IObservable, observable, useStrict, extendObservable, action, computed } from 'mobx'
+import { IObservable, observable, useStrict, extendObservable, action, computed, spy } from 'mobx'
 import { inject as mobxInject, Provider, observer } from 'mobx-react'
 import { defineReadOnlyProperty, isReadonly } from './utils'
 
-export interface Model {
+export interface IModel {
   namespace: string,
   readonly?: boolean,
   state?: { [name: string]: any },
@@ -12,23 +12,27 @@ export interface Model {
   computed?: { [name: string]: () => any }
 }
 
-export interface ModelObject {
+export interface IModelObject {
   [namespace: string]: IObservable
 }
 
-export interface PluginObject {
+export interface IPluginObject {
   [namespace: string]: any
 }
 
-export interface Plugin {
+export interface IPlugin {
   (app: Humbird, options: any): void
 }
 
-export interface Router {
+export interface IRouter {
   (): JSX.Element | Object;
 }
 
-const modelToObservable = (app: Humbird, model: Model) => {
+export interface IListener {
+  (event): void
+}
+
+const modelToObservable = (app: Humbird, model: IModel) => {
   let o = extendObservable({})
 
   // apply state
@@ -64,7 +68,7 @@ export class Humbird {
   private __routerComponent: JSX.Element
   private __mountedRoot?: Element | null
 
-  private __models: Model[] = []
+  private __models: IModel[] = []
   private __modelsObject = {}
 
   private __getInjectList () {
@@ -80,7 +84,7 @@ export class Humbird {
    *
    * @param router
    */
-  router (router: Router) {
+  router (router: IRouter) {
     // wrap provider
     const providerProps = {}
     this.__routerComponent = React.createElement(Provider, this.models, router())
@@ -91,7 +95,7 @@ export class Humbird {
    *
    * @param model
    */
-  model (model: Model) {
+  model (model: IModel) {
     // registry model
     const o = modelToObservable(this, model)
     if (isReadonly(model)) { // default false
@@ -130,8 +134,12 @@ export class Humbird {
    *
    * @param hooks
    */
-  use (plugin: Plugin, options?) {
+  use (plugin: IPlugin, options?) {
     plugin(this, options)
+  }
+
+  spy (listener: IListener) {
+    spy(listener)
   }
 }
 
