@@ -17,9 +17,7 @@ app.models.todoModel.todos[0].task = "grok MobX tutorial";
 app.router(router)
 
 app.spy((event) => {
-    if (event.type === 'action') {
-        console.log(`${event.name} with args: ${event.arguments}`)
-    }
+    console.log(`${event.name} with args: ${event.arguments}`)
 })
 
 app.start('#app')
