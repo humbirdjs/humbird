@@ -16,7 +16,7 @@ Let start with the simplest `Counter` app.
 Firstly, write a counter model:
 
 ```js
-// app/models/counter.js
+// src/models/counter.js
 const counterStore = {
   state: {
     count: 0
@@ -33,7 +33,7 @@ const counterStore = {
 }
 
 export default {
-  namespace: 'counter',
+  name: 'counter',
   ...counterStore
 }
 ```
@@ -43,10 +43,10 @@ export default {
 Secondly write a view:
 
 ```js
-// app/index.js
+// src/index.js
 
 import React from 'react'
-import humbird, { inject } from 'humbird'
+import humbird, { connect } from 'humbird'
 import { observable } from 'humbird/mobx'
 import { BrowserRouter, Route } from 'humbird/router'
 
@@ -56,7 +56,8 @@ const app = humbird()
 
 app.model(counterModel)
 
-const Counter = inject(({ models }) => {
+
+const Counter = connect(({ models }) => ({ models }))(({ models }) => {
   return (
     <div>
       <span>{models.counter.count}</span>
@@ -72,7 +73,7 @@ app.route(() => (
   </BrowserRouter>
 ))
 
-app.start(document.querySelector('#app'))
+app.start('#app')
 
 ```
 
@@ -162,5 +163,5 @@ describe('Counter', () => {
 As you can see, testing humbird application(component) is easy. There are some key points:
 
 1. Shallow the view component, pass `app.models` to `models` props.
-2. Use `app.models[namespace][action]` to modify observable (You could simulate clicking on button, too).
+2. Use `app.models[name][action]` to modify observable (You could simulate clicking on button, too).
 3. Assert the real DOM node and contet.

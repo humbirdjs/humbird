@@ -1,11 +1,11 @@
 # Model
 
-`model` in humbird is an object contains `namespace`, `state`, `actions` and `computed`:
+`model` in humbird is an object contains `name`, `state`, `actions` and `computed`:
 
 ```js
 import { observable } from 'humbird/mobx'
 const counterModel = {
-  namespace: 'counter',
+  name: 'counter',
   state: {
     count: 0
   },
@@ -32,7 +32,7 @@ You can also pass a high order function to `actions`, which receives an `app` in
 
 ```js
 const homepageModel = {
-  namespace: 'homepage',
+  name: 'homepage',
   state: {
     posts: []
   },
@@ -44,7 +44,7 @@ const homepageModel = {
 }
 
 const counterModel = {
-  namespace: 'counter',
+  name: 'counter',
   actions: app => ({
     refresh() {
       app.models.hompage.fetch() // access homepage model
@@ -85,7 +85,7 @@ All the models are not readonly by default, which means that all the models regi
 
 ```js
 app.model({
-  namespace: 'foo',
+  name: 'foo',
   /** ... **/
 })
 
@@ -96,7 +96,7 @@ In some cases you don't want your models be readonly. Just set the `readonly` to
 
 ```js
 app.model({
-  namespace: 'foo',
+  name: 'foo',
   readonly: true
   /** ... **/
 })

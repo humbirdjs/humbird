@@ -18,7 +18,7 @@ const app = humbird()
 
 // model
 app.model({
-  namespace: 'counter',
+  name: 'counter',
   state: {
     count: 0
   },
