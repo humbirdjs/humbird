@@ -58,18 +58,26 @@ app.model(counterModel)
 
 ### Access models in views
 
-The way we access all models is using `inject()` helper:
+The way we access all models is using `connect()`:
 
 ```js
-import { inject } from 'humbird'
-const counterModel = inject(({ models }) => (
-  <div>
-    <span>{models.count}</span>
-  </div>
-))
+import { connect } from 'humbird'
+
+function Counter(({ counter }) {
+  return (
+    <div>
+      <span>{counter.count}</span>
+    </div>
+  )
+}
+
+function mapModelsToProps({ counter }) {
+  return { counter }
+}
+export default connect(mapModelsToProps)(Counter)
 ```
 
-The views that had been wrapped with `inject` will automatically wrapped with mobx-react's `observer`.
+The views that had been wrapped with `connect` will automatically wrapped with mobx-react's `observer`.
 
 ### Readonly Model
 

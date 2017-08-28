@@ -13,4 +13,4 @@
 
 - APIs
   - [humbird](/api/instance)
-  - [inject](/api/inject)
+  - [connect](/api/connect)

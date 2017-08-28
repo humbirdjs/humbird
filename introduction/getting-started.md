@@ -11,7 +11,7 @@ $ yarn add humbird
 Let see a simplest counter application write in humbird:
 
 ```js
-import humbird, { inject } from 'humbird'
+import humbird, { connect } from 'humbird'
 import { BrowserRouter, Route } from 'humbird/router'
 
 const app = humbird()
@@ -33,12 +33,15 @@ app.model({
 })
 
 // view
-const Counter = inject(({ models })) => {
+function mapModelsToProps({ counter }) {
+  return { counter }
+}
+const Counter = connect(mapModelsToProps)(({ counter })) => {
   return (
     <div>
-      <span>{models.counter.count}</span>
-      <button onClick={models.counter.incr}>+</button>
-      <button onClick={models.counter.decr}>-</button>
+      <span>{counter.count}</span>
+      <button onClick={counter.incr}>+</button>
+      <button onClick={counter.decr}>-</button>
     </div>
   )
 }
@@ -55,6 +58,6 @@ app.router(router)
 app.start(document.querySelector('#root'))
 ```
 
-We use `app.model()` to registry a model. For the view component, we use `inject` to wrap a React component, which will automatically re-render by MobX. As for the route, it is a function that return a `react-router` route component.
+We use `app.model()` to registry a model. For the view component, we use `connect` to connect models to React component props, which will automatically re-render by MobX. As for the route, it is a function that return a `react-router` route component.
 
 Finally, we use `app.start()` to mount the app.
