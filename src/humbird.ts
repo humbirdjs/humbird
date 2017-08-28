@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { render } from 'react-dom'
 import { IObservable, observable, useStrict, extendObservable, action, computed, spy } from 'mobx'
-import { inject as mobxInject, Provider, observer } from 'mobx-react'
+import { inject, Provider, observer } from 'mobx-react'
 import { defineReadOnlyProperty, isReadonly } from './utils'
 
 export interface IModel {
-  namespace: string,
+  name: string,
   readonly?: boolean,
   state?: { [name: string]: any },
   actions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
@@ -13,11 +13,11 @@ export interface IModel {
 }
 
 export interface IModelObject {
-  [namespace: string]: IObservable
+  [name: string]: IObservable
 }
 
 export interface IPluginObject {
-  [namespace: string]: any
+  [name: string]: any
 }
 
 export interface IPlugin {
@@ -72,7 +72,7 @@ export class Humbird {
   private __modelsObject = {}
 
   private __getInjectList () {
-    return this.__models.map(model => model.namespace).filter(_ => _)
+    return this.__models.map(model => model.name).filter(_ => _)
   }
 
   get models () {
@@ -99,16 +99,16 @@ export class Humbird {
     // registry model
     const o = modelToObservable(this, model)
     if (isReadonly(model)) { // default false
-      defineReadOnlyProperty(this.__modelsObject, model.namespace, o, `model [${model.namespace}] is readonly.`)
+      defineReadOnlyProperty(this.__modelsObject, model.name, o, `model [${model.name}] is readonly.`)
     } else {
-      this.__modelsObject[model.namespace] = o
+      this.__modelsObject[model.name] = o
     }
     this.__models.push(model)
   }
 
-  unmodel (namespace) {
+  unmodel (name) {
     // delete model from this.__models
-    this.__models = this.__models.filter(model => model.namespace !== namespace);
+    this.__models = this.__models.filter(model => model.name !== name);
   }
 
   /**
@@ -157,7 +157,7 @@ export default function humbird(options: HumbirdOptions = {}): Humbird {
 // connect models to component as props
 export const connect = (mapModelsToProps) => {
   return function(view) {
-    return mobxInject(mapModelsToProps)(observer(view))
+    return inject(mapModelsToProps)(observer(view))
   }
 }
 

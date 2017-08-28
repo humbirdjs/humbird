@@ -1,5 +1,5 @@
 export default {
-    namespace: 'todoModel',
+    name: 'todoModel',
     state: {
         todos: [],
         pendingRequests: 0

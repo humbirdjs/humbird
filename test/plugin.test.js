@@ -18,7 +18,7 @@ describe('plugin system', () => {
   app.use(httpPlugin, { response: 'fake response' })
 
   app.model({
-    namespace: 'weather',
+    name: 'weather',
     state: {
       data: ''
     },
@@ -59,9 +59,7 @@ describe('plugin system', () => {
 
   it('should change weather data', done => {
     const wrapped = shallow(<Weather.wrappedComponent models={app.models} />)
-
     assert.equal(wrapped.find('#data').first().text(), 'fake response')
-
     done()
   })
 })
