@@ -1,6 +1,6 @@
 # Router
 
-humbird use `react-router-dom` v4 as its router. Feel free to import all of `react-router-dom` component.
+Humbird use `react-router-dom` v4 as its router. Feel free to import all of `react-router-dom` component.
 
 ```js
 import { BrowserRouter, Route } from 'mobx/router'

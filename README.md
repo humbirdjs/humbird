@@ -1,4 +1,4 @@
-# humbird
+# Humbird
 
 > A lightweight and elm-style framework for building React MobX application.
 
@@ -21,7 +21,7 @@ humbird is a new framework but growing fastly. Glad to get your **watch** or **s
 
 ### Prior art
 
-humbird would not exist without these projects:
+Humbird would not exist without these projects:
 
 - [dva](https://github.com/dvajs/dva)
 - [cans](https://github.com/djyde/cans)
