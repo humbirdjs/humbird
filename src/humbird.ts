@@ -154,5 +154,11 @@ export default function humbird(options: HumbirdOptions = {}): Humbird {
   return new Humbird()
 }
 
-// model inject helper
-export const inject = (view) => mobxInject(models => ({ models }))(observer(view))
+// connect models to component as props
+export const connect = (mapModelsToProps) => {
+  return function(view) {
+    return mobxInject(mapModelsToProps)(observer(view))
+  }
+}
+
+export { observer }

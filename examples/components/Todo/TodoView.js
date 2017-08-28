@@ -1,6 +1,6 @@
 import React from 'react'
 import DevTools from 'mobx-react-devtools'
-import { observer, inject } from '../../../lib/humbird'
+import { observer } from '../../../lib/humbird'
 
 const TodoView = function({ todo }) {
     const onToggleCompleted = () => {
@@ -26,4 +26,4 @@ const TodoView = function({ todo }) {
     );
 }
 
-export default inject(TodoView)
+export default observer(TodoView)
