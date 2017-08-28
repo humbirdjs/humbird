@@ -10,7 +10,7 @@ describe('observer', () => {
     const app = humbird()
 
     const counterModel = {
-      namespace: 'counter',
+      name: 'counter',
       state: {
         count: 0,
       },
@@ -71,7 +71,7 @@ describe('observer', () => {
     app.use(testPlugin)
 
     app.model({
-      namespace: 'counter',
+      name: 'counter',
       state: {
         count: 0,
         title: ''

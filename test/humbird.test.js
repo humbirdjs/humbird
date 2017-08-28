@@ -20,7 +20,7 @@ describe('humbird', () => {
     app = humbird()
 
     app.model({
-      namespace: 'foo',
+      name: 'foo',
       readonly: true,
       state: {
         data: 'foo',
@@ -28,7 +28,7 @@ describe('humbird', () => {
     })
 
     app.model({
-      namespace: 'public',
+      name: 'public',
       state: {
         data: 'foo',
       },
