@@ -2,7 +2,7 @@ import { observable, action } from 'mobx'
 import React from 'react'
 import assert from 'power-assert'
 import { mount, shallow } from 'enzyme'
-import humbird, { observer, inject } from '../lib/humbird'
+import humbird, { observer, connect } from '../lib/humbird'
 
 describe('observer', () => {
 
@@ -26,7 +26,7 @@ describe('observer', () => {
 
     app.model(counterModel)
 
-    const Counter = inject(({ models }) => {
+    const Counter = connect((models) => ({ models }))(({ models }) => {
       return (
         <div>
           <span id='count'>{models.counter.count}</span>
@@ -35,7 +35,7 @@ describe('observer', () => {
       )
     })
 
-    const Toolbar = inject(({ models, title }) => {
+    const Toolbar = connect((models) => ({ models }))(({ models, title }) => {
       return (
         <div>
           <div id='title'>{title}</div>

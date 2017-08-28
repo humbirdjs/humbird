@@ -2,7 +2,7 @@ import { observable, action } from 'mobx'
 import React from 'react'
 import assert from 'power-assert'
 import { mount, shallow } from 'enzyme'
-import humbird, { observer, inject } from '../lib/humbird'
+import humbird, { observer, connect } from '../lib/humbird'
 
 const httpPlugin = (app, options) => {
   app.http = url => new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ describe('plugin system', () => {
     }
   })
 
-  const Weather = inject(({ models }) => {
+  const Weather = connect((models) => ({ models }))(({ models }) => {
     return (
       <div>
         <p id='data'>{models.weather.data}</p>
