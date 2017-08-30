@@ -8,7 +8,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/humbirdjs/humbird.svg?style=social&label=Star)](https://github.com/humbirdjs/humbird)
 [![GitHub watchers](https://img.shields.io/github/watchers/humbirdjs/humbird.svg?style=social&label=Watch)](https://github.com/humbirdjs/humbird)
 
-humbird is a new framework but growing fastly. Glad to get your **watch** or **star** if you think the idea behind humbird is good. 
+Humbird is a new framework but growing fastly. Glad to get your **watch** or **star** if you think the idea behind humbird is good. 
 
 ### Documents
 
