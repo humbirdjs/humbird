@@ -1,15 +1,21 @@
 import * as React from 'react'
+import { createBrowserHistory } from 'history'
 import { render } from 'react-dom'
-import { IObservable, observable, useStrict, extendObservable, action, computed, spy } from 'mobx'
+import { IObservable, observable, useStrict, extendObservable, computed, action, spy, intercept, observe } from 'mobx'
 import { inject, Provider, observer } from 'mobx-react'
-import { defineReadOnlyProperty, isReadonly } from './utils'
+import { asyncAction } from "mobx-utils"
+import { defineReadOnlyProperty, isReadonly, lowerCaseFirst } from './utils'
+
+export * from 'history'
 
 export interface IModel {
   name: string,
   readonly?: boolean,
   state?: { [name: string]: any },
-  actions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
   computed?: { [name: string]: () => any }
+  actions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
+  asyncActions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
+  interceptors?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
 }
 
 export interface IModelObject {
@@ -25,7 +31,7 @@ export interface IPlugin {
 }
 
 export interface IRouter {
-  (): JSX.Element | Object;
+  ({app: Humbird, history: Object}): JSX.Element | Object;
 }
 
 export interface IListener {
@@ -40,6 +46,15 @@ const modelToObservable = (app: Humbird, model: IModel) => {
     extendObservable(o, model.state)
   }
 
+  // apply computed
+  if (model.computed) {
+    for (let name in model.computed) {
+      extendObservable(o, {
+        [name]: computed(model.computed[name])
+      })
+    }
+  }
+
   // apply actions
   if (model.actions) {
     // if actions is function, pass an app instance
@@ -51,15 +66,33 @@ const modelToObservable = (app: Humbird, model: IModel) => {
     }
   }
 
-  // apply computed
-  if (model.computed) {
-    for (let name in model.computed) {
+  // apply async actions
+  if (model.asyncActions) {
+    // if asyncActions is function, pass an app instance
+    const asyncActions = typeof model.asyncActions === 'function' ? model.asyncActions(app) : model.asyncActions
+    for (let name in asyncActions) {
       extendObservable(o, {
-        [name]: computed(model.computed[name])
+        [name]: asyncAction(name, asyncActions[name] as any)
       })
     }
   }
 
+  // apply intercept & observe
+  if (model.interceptors) {
+    // if asyncActions is function, pass an app instance
+    const interceptors = typeof model.interceptors === 'function' ? model.interceptors(app) : model.interceptors
+    for (let name in interceptors) {
+      // intercept
+      if (name.indexOf('willChange') > -1) {
+        intercept(o, lowerCaseFirst(name.slice(10)), interceptors[name] as any)
+      }
+      // observe
+      else if (name.indexOf('didChange') > -1) {
+        observe(o, lowerCaseFirst(name.slice(9)), interceptors[name] as any)
+      }
+    }
+  }
+  
   return o
 }
 
@@ -70,6 +103,13 @@ export class Humbird {
 
   private __models: IModel[] = []
   private __modelsObject = {}
+
+  private __history = null
+
+  public constructor(options) {
+    const { history } = options
+    this.__history = history || createBrowserHistory()
+  }
 
   private __getInjectList () {
     return this.__models.map(model => model.name).filter(_ => _)
@@ -85,9 +125,7 @@ export class Humbird {
    * @param router
    */
   router (router: IRouter) {
-    // wrap provider
-    const providerProps = {}
-    this.__routerComponent = React.createElement(Provider, this.models, router())
+    this.__routerComponent = React.createElement(Provider, this.models, router({ app: this, history: this.__history }))
   }
 
   /**
@@ -118,6 +156,19 @@ export class Humbird {
    * @param el Element | string
    */
   start (el: Element | string) {
+    // run subscriptions
+    for (const model of this.__models) {
+      if (model.interceptors) {
+        const interceptors = typeof model.interceptors === 'function' ? model.interceptors(this) : model.interceptors
+        for (let name in interceptors) {
+          // intercept
+          if (name.indexOf('willChange') == -1 && name.indexOf('didChange') == -1) {
+            const sub = interceptors[name]
+            sub({app: this, history: this.__history})
+          }
+        }
+      }
+    }
     // support selector
     let container : Element | null
     if (typeof el === 'string') {
@@ -144,14 +195,16 @@ export class Humbird {
 }
 
 export interface HumbirdOptions {
-  useStrict?: boolean
+  useStrict?: boolean,
+  initialState?: Object,
+  history?: Object
 }
 
 export default function humbird(options: HumbirdOptions = {}): Humbird {
   if (options.useStrict === true) {
     useStrict(true)
   }
-  return new Humbird()
+  return new Humbird(options)
 }
 
 // connect models to component as props

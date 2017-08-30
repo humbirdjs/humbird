@@ -74,7 +74,13 @@ describe('observer', () => {
       name: 'counter',
       state: {
         count: 0,
-        title: ''
+        title: '',
+        titleColor: "#ffffff"
+      },
+      computed: {
+        content() {
+          return this.title + this.count
+        }
       },
       actions: appInstance => ({
         incr() {
@@ -83,15 +89,55 @@ describe('observer', () => {
         decr() {
           this.count -= 1
         },
-        setTitle() {
+        setAppTitle() {
           this.title = appInstance.test
+        },
+        setTitle(title) {
+          this.title = title
+        },
+        setTitleColor(color) {
+          this.titleColor = color
         }
       }),
-      computed: {
-        content() {
-          return this.title + this.count
+      asyncActions: {
+        * fetchTitle (payload) {
+          const data = yield new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve('test')
+            }, 1000)
+          })
+          this.title = `${data} ${payload}`
+        }
+      },
+      interceptors: {
+        willChangeTitleColor(change) {
+          if (!change.newValue) {
+            // ignore attempts to unset the count
+            return null;
+          }
+          if (change.newValue.length === 6) {
+            // correct missing '#' prefix
+            change.newValue = '#' + change.newValue;
+            return change;
+          }
+          if (change.newValue.length === 7) {
+              // this must be a properly formatted color code!
+              return change;
+          }
+          if (change.newValue.length > 10) disposer(); // stop intercepting future changes
+          throw new Error("This doesn't like a color at all: " + change.newValue);
+        },
+        didChangeTitle(change) {
+          console.log('title change to', change.newValue, 'from', change.oldValue);
         }
       }
+    })
+
+    describe('computed', () => {
+      it('should calculate computed value', done => {
+        assert.equal(app.models.counter.content, app.models.counter.title + app.models.counter.count)
+        done()
+      })
     })
 
     describe('state/action', () => {
@@ -101,16 +147,40 @@ describe('observer', () => {
         done()
       })
 
+      it('should change title', done => {
+        app.models.counter.setTitle('ok')
+        assert.equal(app.models.counter.title, 'ok')
+        done()
+      })
+
       it('should get app instance in action', done => {
-        app.models.counter.setTitle()
+        app.models.counter.setAppTitle()
         assert.equal(app.models.counter.title, 'foo')
         done()
       })
     })
 
-    describe('computed', () => {
-      it('should calculate computed value', done => {
-        assert.equal(app.models.counter.content, app.models.counter.title + app.models.counter.count)
+    describe('state/asyncAction', () => {
+      it('should change title', done => {
+        app.models.counter.fetchTitle('fetch').then(() => {
+          assert.equal(app.models.counter.title, 'test fetch')
+          done()
+        })
+      })
+    })
+
+
+    describe('state/willChange', () => {
+      it('should will change titleColor', done => {
+        app.models.counter.setTitleColor('ffff00')
+        assert.equal(app.models.counter.titleColor, '#ffff00')
+        done()
+      })
+    })
+
+    describe('state/didChange', () => {
+      it('should did change title', done => {
+        app.models.counter.setTitle('change title')
         done()
       })
     })

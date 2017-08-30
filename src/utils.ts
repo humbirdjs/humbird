@@ -13,3 +13,7 @@ export const defineReadOnlyProperty = (scope: object, name: string, value: any, 
 export const isReadonly = (property: any) => {
   return property.readonly === true
 }
+
+export const lowerCaseFirst = (str: string) => {
+  return str.slice(0, 1).toLowerCase() + str.slice(1);  
+} 
