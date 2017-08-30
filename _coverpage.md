@@ -1,4 +1,4 @@
-<h1 style="font-family: 'Megrim', cursive; font-size: 6em">humbird</h1>
+<img width="256" height="128" alt="logo" src="https://raw.githubusercontent.com/humbirdjs/humbird/gh-pages/humbirdjs.png" />
 
 > A lightweight and elm-style framework for building React MobX application.
 
