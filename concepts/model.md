@@ -1,6 +1,6 @@
 # Model
 
-`model` in humbird is an object contains `name`, `state`, `actions` and `computed`:
+`model` in humbird is an object contains `name`, `state`, `computed`, `actions`,`asyncActions`and `interceptors`:
 
 ```js
 import { observable } from 'humbird/mobx'
@@ -9,14 +9,32 @@ const counterModel = {
   state: {
     count: 0
   },
+  computed: {
+    content() {
+      return 'Totally' + this.count
+    }
+  },
   actions: {
     incr() {
       /** ... **/
     }
   },
-  computed: {
-    content() {
-      return 'Totally' + this.count
+  asyncActions: {
+    * fetchCount() {
+      yeild fetch(...)
+      /** ... **/
+    }
+  },
+  interceptors: {
+    setup({app, history}) {
+      /** ... **/
+    }
+    willChangeCount(change) {
+      /** ... **/
+      return change
+    },
+    didChangeCount(change) {
+      /** ... **/
     }
   }
 }
