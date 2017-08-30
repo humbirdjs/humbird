@@ -22,12 +22,31 @@ app.model({
   state: {
     count: 0
   },
+  computed: {
+    report() {
+      return `counter value: ${count}`
+    }
+  },
   actions: {
     incr() {
       this.count += 1
     },
     decr() {
       this.count -= 1
+    }
+  },
+  interceptors: {
+    setup({app, history}) {
+      history.listen((location, action) => {
+        /* ... */
+      })
+    },
+    willChangeCount(change) {
+      /* ... */
+      return change
+    },
+    didChangeCount(change) {
+      /* ... */
     }
   }
 })
