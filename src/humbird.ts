@@ -18,14 +18,6 @@ export interface IModel {
   interceptors?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
 }
 
-export interface IModelObject {
-  [name: string]: IObservable
-}
-
-export interface IPluginObject {
-  [name: string]: any
-}
-
 export interface IPlugin {
   (app: Humbird, options: any): void
 }
@@ -200,7 +192,7 @@ export interface HumbirdOptions {
   history?: Object
 }
 
-export default function humbird(options: HumbirdOptions = {}): Humbird {
+export default function humbird(options: HumbirdOptions = { useStrict: true }): Humbird {
   if (options.useStrict === true) {
     useStrict(true)
   }
