@@ -11,10 +11,13 @@ $ yarn add humbird
 Let see a simplest counter application write in humbird:
 
 ```js
-import humbird, { connect } from 'humbird'
-import { BrowserRouter, Route } from 'humbird/router'
+import humbird, { connect, createHashHistory } from 'humbird'
+import { Router, Route } from 'react-router-dom'
 
-const app = humbird()
+const history = createHashHistory()
+const app = humbird({
+    history
+})
 
 // model
 app.model({
@@ -66,10 +69,10 @@ const Counter = connect(mapModelsToProps)(({ counter })) => {
 }
 
 // router
-const router = () => (
-  <BrowserRouter>
+const router = ({history}) => (
+  <Router history={history}>
     <Route path='/' component={Counter} />
-  </BrowserRouter>
+  </Router>
 )
 app.router(router)
 

@@ -6,7 +6,7 @@ Return a humbird app instance
 
 #### options
 
-- useStrict: boolean. Enable MobX strict mode.
+- useStrict: boolean. Default true. Enable MobX strict mode.
 - history: History.
 
 ### app.model(model)
