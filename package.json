@@ -11,6 +11,16 @@
   },
   "main": "lib/humbird.js",
   "typings": "lib/humbird.d.ts",
+  "keywords": [
+    "mobx",
+    "react",
+    "react-native",
+    "mobile",
+    "elm",
+    "dva",
+    "framework",
+    "frontend"
+  ],
   "author": {
     "name": "Xuegui Yuan",
     "email": "yuanxuegui@163.com"
