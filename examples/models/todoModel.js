@@ -32,7 +32,7 @@ export default {
             });
         }
     },
-	interceptors: {
+    interceptors: {
         setup({app, history}) {
             console.log('setup...')
             history.listen((location, action) => {

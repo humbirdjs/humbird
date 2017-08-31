@@ -4,6 +4,7 @@ import { connect } from '../../../lib/humbird'
 import TodoView from '../../components/Todo/TodoView'
 
 const TodoList = function({ todoModel }) {
+  console.log('render TodoList')
   const onNewTodo = () => {
     todoModel.addTodo(prompt('Enter a new todo:','coffee plz'));
   }
