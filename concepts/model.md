@@ -110,7 +110,7 @@ app.model({
 app.models.foo = {} // it's ok
 ```
 
-In some cases you don't want your models be readonly. Just set the `readonly` to `false`:
+In some cases you want your models be readonly. Just set the `readonly` to `true`:
 
 ```js
 app.model({
