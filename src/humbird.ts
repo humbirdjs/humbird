@@ -7,7 +7,11 @@ import { asyncAction } from "mobx-utils"
 import { defineReadOnlyProperty, isReadonly, lowerCaseFirst } from './utils'
 
 export * from 'history'
+export { observer }
 
+/**
+ * Model interface.
+ */
 export interface IModel {
   name: string,
   readonly?: boolean,
@@ -18,18 +22,32 @@ export interface IModel {
   interceptors?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
 }
 
+/**
+ * Plugin interface.
+ */
 export interface IPlugin {
   (app: Humbird, options: any): void
 }
 
+/**
+ * Router interface.
+ */
 export interface IRouter {
   ({app: Humbird, history: Object}): JSX.Element | Object;
 }
 
+/**
+ * Listener interface.
+ */
 export interface IListener {
   (event): void
 }
 
+/**
+ * Map IModel instance to Observable.
+ * @param app Humbird instance
+ * @param model IModel instance
+ */
 const modelToObservable = (app: Humbird, model: IModel) => {
   let o = extendObservable({})
 
@@ -88,27 +106,28 @@ const modelToObservable = (app: Humbird, model: IModel) => {
   return o
 }
 
+/**
+ * Humbird main class.
+ */
 export class Humbird {
 
-  private __routerComponent: JSX.Element
-  private __mountedRoot?: Element | null
-
-  private __models: IModel[] = []
-  private __modelsObject = {}
-
-  private __history = null
+  private _routerComponent: JSX.Element
+  private _mountedRoot?: Element | null
+  private _sourceModels: IModel[] = []
+  private _observableModels = {}
+  private _history = null
 
   public constructor(options) {
-    const { history } = options
-    this.__history = history || createBrowserHistory()
-  }
-
-  private __getInjectList () {
-    return this.__models.map(model => model.name).filter(_ => _)
+    const { history: theHistory } = options
+    this._history = theHistory || createBrowserHistory()
   }
 
   get models () {
-    return this.__modelsObject
+    return this._observableModels
+  }
+
+  get history() {
+    return this._history
   }
 
   /**
@@ -117,7 +136,7 @@ export class Humbird {
    * @param router
    */
   router (router: IRouter) {
-    this.__routerComponent = React.createElement(Provider, this.models, router({ app: this, history: this.__history }))
+    this._routerComponent = React.createElement(Provider, this.models, router({ app: this, history: this._history }))
   }
 
   /**
@@ -126,37 +145,30 @@ export class Humbird {
    * @param model
    */
   model (model: IModel) {
-    // registry model
     const o = modelToObservable(this, model)
     if (isReadonly(model)) { // default false
-      defineReadOnlyProperty(this.__modelsObject, model.name, o, `model [${model.name}] is readonly.`)
+      defineReadOnlyProperty(this._observableModels, model.name, o, `model [${model.name}] is readonly.`)
     } else {
-      this.__modelsObject[model.name] = o
+      this._observableModels[model.name] = o
     }
-    this.__models.push(model)
-  }
-
-  unmodel (name) {
-    // delete model from this.__models
-    this.__models = this.__models.filter(model => model.name !== name);
+    this._sourceModels.push(model)
   }
 
   /**
-   * Start the application. Selector is optional. If no selector
-   * arguments, it will return a function that return JSX elements.
+   * Start the application.
    *
    * @param el Element | string
    */
   start (el: Element | string) {
-    // run subscriptions
-    for (const model of this.__models) {
+    // apply subscriptions (name not contains `willChange` or `didChange`)
+    for (const model of this._sourceModels) {
       if (model.interceptors) {
         const interceptors = typeof model.interceptors === 'function' ? model.interceptors(this) : model.interceptors
         for (let name in interceptors) {
           // intercept
           if (name.indexOf('willChange') == -1 && name.indexOf('didChange') == -1) {
             const sub = interceptors[name]
-            sub({app: this, history: this.__history})
+            sub({app: this, history: this._history}) // run subscriptions
           }
         }
       }
@@ -168,42 +180,56 @@ export class Humbird {
     } else {
       container = el
     }
-    render(this.__routerComponent, container)
-    this.__mountedRoot = container
+    render(this._routerComponent, container)
+    this._mountedRoot = container
   }
 
   /**
    * Register an object of hooks on the application.
    *
-   * @param hooks
+   * @param plugin
    */
   use (plugin: IPlugin, options?) {
     plugin(this, options)
   }
 
+  /**
+   * Register a global listener
+   * 
+   * @param listener 
+   */
   spy (listener: IListener) {
     spy(listener)
   }
 }
 
-export interface HumbirdOptions {
+/**
+ * HumbirdOptions interface
+ */
+export interface IHumbirdOptions {
   useStrict?: boolean,
   initialState?: Object,
   history?: Object
 }
 
-export default function humbird(options: HumbirdOptions = { useStrict: true }): Humbird {
+/**
+ * Build humbird instance
+ * 
+ * @param options 
+ */
+export default function humbird(options: IHumbirdOptions = { useStrict: true }): Humbird {
   if (options.useStrict === true) {
     useStrict(true)
   }
   return new Humbird(options)
 }
 
-// connect models to component as props
+/**
+ * connect models to component as props
+ * @param mapModelsToProps 
+ */
 export const connect = (mapModelsToProps) => {
   return function(view) {
     return inject(mapModelsToProps)(observer(view))
   }
 }
-
-export { observer }
