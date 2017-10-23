@@ -140,6 +140,15 @@ export class Humbird {
   }
 
   /**
+   * Config root component.
+   * 
+   * @param root root component
+   */
+  root (root: JSX.Element | Object) {
+    this._routerComponent = React.createElement(Provider, this.models, root)
+  }
+
+  /**
    * Register a model.
    *
    * @param model
@@ -213,6 +222,11 @@ export interface IHumbirdOptions {
 }
 
 /**
+ * mapModelsToProps type
+ */
+export type IMapModelsToProps = (models: any, nextProps: any, context: any) => any;
+
+/**
  * Build humbird instance
  * 
  * @param options 
@@ -228,7 +242,7 @@ export default function humbird(options: IHumbirdOptions = { useStrict: true }):
  * connect models to component as props
  * @param mapModelsToProps 
  */
-export const connect = (mapModelsToProps) => {
+export const connect = (mapModelsToProps: IMapModelsToProps) => {
   return function(view) {
     return inject(mapModelsToProps)(observer(view))
   }
