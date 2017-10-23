@@ -27,7 +27,11 @@ See [plugin](/concepts/plugin).
 
 ### app.router(() => ReactRouterRouteComponent)
 
-Apply the route.
+Apply the router.
+
+### app.root(component)
+
+Apply the root component when you do not use app.router.
 
 See [router](/concepts/router)
 
