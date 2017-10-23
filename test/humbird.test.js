@@ -42,7 +42,7 @@ describe('humbird', () => {
   describe('router', () => {
     it('should set router', (done) => {
       app.router(router)
-      assert(app.__routerComponent)
+      assert(app._routerComponent)
       done()
     })
   })
@@ -73,7 +73,7 @@ describe('humbird', () => {
     it('should mount to specific element', (done) => {
       app.router(router)
       app.start(rootEl)
-      assert(app.__mountedRoot === rootEl)
+      assert(app._mountedRoot === rootEl)
       done()
     })
   })
