@@ -1,7 +1,7 @@
 {
   "name": "humbird",
   "description": "A lightweight and elm-style framework for building React MobX application.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": {
     "example": "webpack-dev-server --open --config examples/webpack.config.js",
     "clean": "rm -rf lib/",
