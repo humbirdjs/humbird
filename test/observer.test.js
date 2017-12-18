@@ -70,12 +70,21 @@ describe('observer', () => {
 
     app.use(testPlugin)
 
+    const todos = [{ test: "value" }]
+
     app.model({
       name: 'counter',
       state: {
         count: 0,
         title: '',
-        titleColor: "#ffffff"
+        titleColor: "#ffffff",
+        arr1: []
+      },
+      refState: {
+        arr2: []
+      },
+      shallowState: {
+        arr3: []
       },
       computed: {
         content() {
@@ -97,6 +106,11 @@ describe('observer', () => {
         },
         setTitleColor(color) {
           this.titleColor = color
+        },
+        initArr() {
+          this.arr1 = todos
+          this.arr2 = todos
+          this.arr3 = todos
         }
       }),
       asyncActions: {
@@ -131,6 +145,22 @@ describe('observer', () => {
           console.log('title change to', change.newValue, 'from', change.oldValue);
         }
       }
+    })
+
+    describe('effect of refState and shallowState', () => {
+      app.models.counter.initArr()
+      it('effect of state should observable', done => {
+        assert.equal(app.models.counter.arr1 == todos, false)
+        done()
+      })
+      it('effect of refState should non-observable', done => {
+        assert.equal(app.models.counter.arr2 == todos, true)
+        done()
+      })
+      it('effect of shallowState should observable', done => {
+        assert.equal(app.models.counter.arr3 == todos, false)
+        done()
+      })
     })
 
     describe('computed', () => {
