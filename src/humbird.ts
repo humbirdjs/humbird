@@ -15,7 +15,10 @@ export { observer }
 export interface IModel {
   name: string,
   readonly?: boolean,
+  observable?: any,
   state?: { [name: string]: any },
+  refState?: { [name: string]: any },
+  shallowState: { [name: string]: any },
   computed?: { [name: string]: () => any }
   actions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
   asyncActions?: { [name: string]: (app: Humbird) => () => void } | { [name: string]: () => void },
@@ -51,12 +54,35 @@ export interface IListener {
 const modelToObservable = (app: Humbird, model: IModel) => {
   let o = extendObservable({})
 
-  // apply state
+  // apply observable: object or function
+  if (model.observable) {
+    o = typeof model.observable === 'function' ? model.observable(app) : model.observable
+  }
+
+  // apply state: @observable
   if (model.state) {
     extendObservable(o, model.state)
   }
 
-  // apply computed
+  // apply refState: @observable.ref
+  if (model.refState) {
+    for (let name in model.refState) {
+      extendObservable(o, {
+        [name]: observable.ref(model.refState[name])
+      })
+    }
+  }
+
+  // apply shallowState: @observable.shallow
+  if (model.shallowState) {
+    for (let name in model.shallowState) {
+      extendObservable(o, {
+        [name]: observable.shallow(model.shallowState[name])
+      })
+    }
+  }
+
+  // apply computed: @computed
   if (model.computed) {
     for (let name in model.computed) {
       extendObservable(o, {
@@ -65,7 +91,7 @@ const modelToObservable = (app: Humbird, model: IModel) => {
     }
   }
 
-  // apply actions
+  // apply actions: @action
   if (model.actions) {
     // if actions is function, pass an app instance
     const actions = typeof model.actions === 'function' ? model.actions(app) : model.actions
