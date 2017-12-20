@@ -12,7 +12,7 @@ Humbird is a new framework but growing fastly. Glad to get your **watch** or **s
 
 ### Documents
 
-- [Getting Started](/introduction/getting-started.md)
+- [Getting Started](/gh-pages/introduction/getting-started.md)
 - [DOCS](https://humbirdjs.github.io/humbird/)
 
 ### See Also
